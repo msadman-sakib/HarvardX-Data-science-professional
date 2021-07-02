@@ -68,6 +68,6 @@ probability = first.draw.cyan * second.draw.not.cyan
 paste0("probability (with replacement):",probability)
 ```
 
-# **Now, Combinations and Permutations**  
+# **Now, Combinations and Permutations**
 
-Testing to see if this commit is assigned to my current github profile(m.sadman....)
+Okay, it works.
