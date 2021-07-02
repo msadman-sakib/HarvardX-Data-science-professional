@@ -1,0 +1,69 @@
+---
+title: "Section 3 - 1.1 Discreet Probability"
+output: github_document
+---
+
+First, set the seed. This is very important to reproduce the results in this markdown.
+
+```{r set-seed}
+set.seed(1986, sample.kind="Rounding")
+```
+
+# 1. we can use `mean()` function to calculate probabilities
+
+For example, say we have 2 red and 3 blue beads in an urn.
+
+```{r}
+beads <- rep(c("red", "blue"), times = c(2,3))
+beads
+```
+
+*Q: What is the probability to pick out blue beads?*
+
+```{r}
+mean(beads == "blue")
+```
+
+Therefore, mean() of a logical vector(beads == "blue") is giving out the probability of picking up a blue bead from the urn.
+
+### Assessment:
+
+**Probability of cyan**
+
+1- One ball will be drawn at random from a box containing: 3 cyan balls, 5 magenta balls, and 7 yellow balls. Calculate probability of picking and not picking cyan balls.
+
+```{r}
+beads <- rep(c("cyan", "magenta", "yellow"), times = c(3,5,7))
+beads
+A = mean(beads =="cyan")
+B = mean(beads !="cyan")
+paste0("probabiliy of picking cyan:", A)
+paste0("probability of not picking cyan:", B)
+
+```
+
+2- Instead of taking just one draw, consider taking two draws. You take the second draw without returning the first draw to the box.
+
+We call this **sampling without replacement**. What is the probability that the first draw is cyan and that the second draw is not cyan?
+
+*A:* need to multiply correctly of those two probabilities above.
+
+```{r}
+first.draw.cyan = 3/(3+5+7)
+second.draw.not.cyan = 1 - (2/(2+5+7))
+probability = first.draw.cyan * second.draw.not.cyan
+paste0("probability (without replacement):",probability)
+
+
+```
+
+3- Now repeat the experiment, but this time, after taking the first draw and recording the color, return it back to the box and shake the box. We call this sampling with replacement.
+
+What is the probability that the first draw is cyan and that the second draw is not cyan?
+
+```{r}
+first.draw.cyan = 3/(3+5+7)
+second.draw.not.cyan = 1 - (3/(3+5+7))
+probability = first.draw.cyan * second.draw.not.cyan
+paste0("probability (with replacement):",probability)
+```
