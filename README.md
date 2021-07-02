@@ -1,6 +1,6 @@
-# harvardX-DS-section-3-probability
+# HarvardX Data science professional certificate course
 
-- This contains the Rscript/Rmarkdown for the HarvardX professional Data Science hosted on [edX platform].
+- This repo contains Rmarkdown notes for my HarvardX professional Data Science certificate courses hosted on [edX platform].
 
 
 
