@@ -9,7 +9,7 @@ First, set the seed. This is very important to reproduce the results in this mar
 set.seed(1986, sample.kind="Rounding")
 ```
 
-# 1. we can use `mean()` function to calculate probabilities
+# We can use `mean()` function to calculate probabilities
 
 For example, say we have 2 red and 3 blue beads in an urn.
 
@@ -68,4 +68,6 @@ probability = first.draw.cyan * second.draw.not.cyan
 paste0("probability (with replacement):",probability)
 ```
 
-After this, did similar exercise on Datacamp.
+# **Now, Combinations and Permutations**  
+
+Testing to see if this commit is assigned to my current github profile(m.sadman....)
