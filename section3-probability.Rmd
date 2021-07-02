@@ -67,3 +67,5 @@ second.draw.not.cyan = 1 - (3/(3+5+7))
 probability = first.draw.cyan * second.draw.not.cyan
 paste0("probability (with replacement):",probability)
 ```
+
+After this, did similar exercise on Datacamp.
