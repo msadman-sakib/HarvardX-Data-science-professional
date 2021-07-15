@@ -1,6 +1,6 @@
 # HarvardX Data science professional certificate course
 
-- This repo contains Rmarkdown notes for my HarvardX professional Data Science certificate courses hosted on [edX platform].
+- This repo contains Rmarkdown notes for my ongoing HarvardX professional Data Science certificate courses hosted on [edX platform].
 
 
 
