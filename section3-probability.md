@@ -1,6 +1,8 @@
-Section 3 - 1.1 Discreet Probability
+Section 3 - Probability
 ================
 M Sadman Sakib
+
+# Discreet probability
 
 First, set the seed. This is very important to reproduce the results in
 this markdown.
@@ -102,7 +104,7 @@ Bonus:
 
 -   `prop.table()` returns proportions.
 
-# **Now, Combinations and Permutations**
+# Combinations and Permutations
 
 ## Introducing paste() and expand.grid()
 
@@ -810,7 +812,9 @@ esoph %>%  filter(tobgp == "30+" | alcgp == "120+" ) %>% summarise(ncases.sum = 
     ##   ncases.sum ncontrols.sum ncases.prob ncontrols.prob    ratio
     ## 1         66            70        0.33     0.09032258 3.653571
 
-\#\#Now, Continuous probabiliy: Using pnorm() to calculate probabilities
+# Continuous probabiliy:
+
+Using pnorm() to calculate probabilities
 
 ``` r
 #Given male heights x:
@@ -885,3 +889,347 @@ pnorm(70.9, mean(x), sd(x)) - pnorm(70.1, mean(x), sd(x))
 ```
 
     ## [1] 0.08359562
+
+-   bear in mind, that the probability of a single value is not defined
+    for a continuous distribution.
+
+-   In R, the probability density function for the normal distribution
+    is given by `dnorm()`. We will see uses of `dnorm()` in the future.
+
+-   Note that `dnorm()` gives the density function and `pnorm()` gives
+    the distribution function, *which is the integral of the density
+    function.*
+
+# Plotting the probability density for the normal distribution
+
+We can use dnorm() to plot the density curve for the normal
+distribution. dnorm(z) gives the probability density f(z) of a certain
+z-score, so we can draw a curve by calculating the density over a range
+of possible values of z. First, we generate a series of z-scores
+covering the typical range of the normal distribution. Since we know
+99.7% of observations will be within -3 =&lt; z =&lt; 3, we can use a
+value of slightly larger than 3 and this will cover most likely values
+of the normal distribution. Then, we calculate f(z), which is dnorm() of
+the series of z-scores. Last, we plot z against f(z).
+
+``` r
+library(tidyverse)
+x <- seq(-4, 4, length = 100)
+data.frame(x, f = dnorm(x)) %>%
+    ggplot(aes(x, f)) +
+    geom_line()
+```
+
+![](section3-probability_files/figure-gfm/unnamed-chunk-28-1.png)<!-- -->
+Note that dnorm() gives densities for the standard normal distribution
+by default. Probabilities for alternative normal distributions with mean
+mu and standard deviation sigma can be evaluated with:
+
+``` r
+# dnorm(z, mu, sigma)
+```
+
+# Monte Carlo Simulations
+
+-   rnorm(n, avg, s) generates n random numbers from the normal
+    distribution with average avg and standard deviation s.
+-   By generating random numbers from the normal distribution, we can
+    simulate height data with similar properties to our dataset. Here we
+    generate simulated height data using the normal distribution.
+
+### Generating normally distributed random numbers
+
+``` r
+# define x as male heights from dslabs data
+library(tidyverse)
+library(dslabs)
+data(heights)
+x <- heights %>% filter(sex=="Male") %>% pull(height)
+
+# generate simulated height data using normal distribution - both datasets should have n observations
+n <- length(x)
+avg <- mean(x)
+s <- sd(x)
+simulated_heights <- rnorm(n, avg, s)
+
+# plot distribution of simulated_heights
+data.frame(simulated_heights = simulated_heights) %>%
+    ggplot(aes(simulated_heights)) +
+    geom_histogram(color="black", binwidth = 2)
+```
+
+![](section3-probability_files/figure-gfm/unnamed-chunk-30-1.png)<!-- -->
+\#\#\# Monte Carlo simulation of tallest person over 7 feet
+
+``` r
+B <- 10000
+tallest <- replicate(B, {
+    simulated_data <- rnorm(800, avg, s)    # generate 800 normally distributed random heights
+    max(simulated_data)    # determine the tallest height
+})
+mean(tallest >= 7*12)    # proportion of times that tallest person exceeded 7 feet (84 inches)
+```
+
+    ## [1] 0.0216
+
+# Other Continuous Distributions
+
+-   I may encounter other continuous distributions (Student t,
+    chi-squared, exponential, gamma, beta, etc.).
+-   R provides functions for density (d), quantile (q), probability
+    distribution (p) and random number generation (r) for many of these
+    distributions.
+-   Each distribution has a matching abbreviation (for example, norm()
+    or t()) that is paired with the related function abbreviations (d,
+    p, q, r) to create appropriate functions.
+-   Each distribution has a matching abbreviation (for example, norm()
+    or t()) that is paired with the related function abbreviations (d,
+    p, q, r) to create appropriate functions. \#\#\# Plotting the normal
+    distribution with dnorm Use d to plot the density function of a
+    continuous distribution. Here is the density function for the normal
+    distribution (abbreviation norm()):
+
+``` r
+x <- seq(-4, 4, length.out = 100)
+data.frame(x, f = dnorm(x)) %>%
+    ggplot(aes(x,f)) +
+    geom_line()
+```
+
+![](section3-probability_files/figure-gfm/unnamed-chunk-32-1.png)<!-- -->
+\#\#\# Important: Say, the distribution of male adults is approximately
+normal with an average of 69 inches and a standard deviation of 3
+inches. How tall is a male in the 99th percentile?
+
+``` r
+# Assign a variable 'male_avg' as the average male height.
+male_avg <- 69
+
+# Assign a variable 'male_sd' as the standard deviation for male heights.
+male_sd <- 3
+
+#The height of a man in the 99th percentile, given an average height of 69 inches and a standard deviation of 3 inches is:
+qnorm(0.99, mean = male_avg, sd = male_sd) 
+```
+
+    ## [1] 75.97904
+
+**So, pnorm() gives the probability, qnorm() gives the inverse, meaning
+for a given probability, the expected value, for a particular normal
+distribution with predefined mean and sd.**
+
+### expercise:
+
+The distribution of IQ scores is approximately normally distributed. The
+average is 100 and the standard deviation is 15. Suppose you want to
+know the distribution of the person with the highest IQ in your school
+district, where 10,000 people are born each year.
+
+Generate 10,000 IQ scores 1,000 times using a Monte Carlo simulation.
+Make a histogram of the highest IQ scores.
+
+``` r
+# The variable `B` specifies the number of times we want the simulation to run.
+B <- 1000
+
+# Use the `set.seed` function to make sure your answer matches the expected result after random number generation.
+set.seed(1)
+
+# Create an object called `highestIQ` that contains the highest IQ score from each random distribution of 10,000 people. Use the function rnorm to generate a random distribution of 10,000 values with a given average and standard deviation. Use the function max to return the largest value from a supplied vector. Repeat the previous steps a total of 1,000 times. Store the vector of the top 1,000 IQ scores as highestIQ.
+mean_IQ = 100
+sd_IQ = 15
+
+highestIQ = replicate(B, {
+            x = rnorm(10000,mean_IQ,sd_IQ )
+            max(x)
+})
+
+# Make a histogram of the highest IQ scores.
+hist(highestIQ)
+```
+
+![](section3-probability_files/figure-gfm/unnamed-chunk-34-1.png)<!-- -->
+
+# Assessment: Continuous Probability
+
+Notes: - The ACT is a standardized college admissions test used in the
+United States. The four multi-part questions in this assessment all
+involve simulating some ACT test scores and answering probability
+questions about them.
+
+-   For the three year period 2016-2018, ACT standardized test scores
+    were approximately normally distributed with a mean of 20.9 and
+    standard deviation of 5.7. (Real ACT scores are integers between 1
+    and 36, but we will ignore this detail and use continuous values
+    instead.)
+
+``` r
+set.seed(16, sample.kind = "Rounding") 
+```
+
+    ## Warning in set.seed(16, sample.kind = "Rounding"): non-uniform 'Rounding'
+    ## sampler used
+
+``` r
+act_scores = rnorm(10000, mean = 20.9, sd = 5.7)
+#Just checking their normal distribution quickly with base R. 
+density_act_scores = density(act_scores)
+plot(density_act_scores)
+```
+
+![](section3-probability_files/figure-gfm/unnamed-chunk-35-1.png)<!-- -->
+\#\#\# In act\_scores, how many perfect scores are there out of 10,000
+simulated tests?
+
+``` r
+sum(act_scores >= 36)
+```
+
+    ## [1] 41
+
+### In `act_scores`, what is the probability of an ACT score greater than 30?
+
+``` r
+1 - pnorm(30, mean(act_scores), sd(act_scores)) 
+```
+
+    ## [1] 0.05326283
+
+``` r
+##Also, this way:
+mean(act_scores > 30)
+```
+
+    ## [1] 0.0527
+
+### In act\_scores, what is the probability of an ACT score less than or equal to 10?
+
+``` r
+mean(act_scores <= 10)
+```
+
+    ## [1] 0.0282
+
+### Set x equal to the sequence of integers 1 to 36. Use dnorm to determine the value of the probability density function over x given a mean of 20.9 and standard deviation of 5.7; save the result as f\_x. Plot x against f\_x.
+
+``` r
+x = seq(1:36)
+f_x = dnorm(x, mean = 20.9, sd = 5.7)
+plot(x, f_x)
+```
+
+![](section3-probability_files/figure-gfm/unnamed-chunk-39-1.png)<!-- -->
+
+``` r
+##Also with ggplot2
+data.frame(x, f_x) %>%
+  ggplot(aes(x, f_x)) +
+  geom_line()
+```
+
+![](section3-probability_files/figure-gfm/unnamed-chunk-39-2.png)<!-- -->
+
+# Next part
+
+Convert act\_scores to Z-scores. Recall from Data Visualization (the
+second course in this series) that to standardize values (convert values
+into Z-scores, that is, values distributed with a mean of 0 and standard
+deviation of 1), you must subtract the mean and then divide by the
+standard deviation. Use the mean and standard deviation of act\_scores,
+not the original values used to generate random test scores.
+
+``` r
+df =  data.frame(act_scores)
+df = df %>% mutate(Z.score = (act_scores - mean(act_scores))/sd(act_scores))
+```
+
+### What is the probability of a Z-score greater than 2 (2 standard deviations above the mean)?
+
+``` r
+mean(df$Z.score>2)
+```
+
+    ## [1] 0.0233
+
+### What ACT score value corresponds to 2 standard deviations above the mean (Z = 2)?
+
+``` r
+mean(act_scores) + 2*sd(act_scores)
+```
+
+    ## [1] 32.1906
+
+### A Z-score of 2 corresponds roughly to the 97.5th percentile.
+
+Use qnorm() to determine the 97.5th percentile of normally distributed
+data with the mean and standard deviation observed in act\_scores.
+
+What is the 97.5th percentile of act\_scores?
+
+``` r
+qnorm(0.975, mean = mean(act_scores), sd = sd(act_scores))
+```
+
+    ## [1] 31.96338
+
+# In this 4-part question, you will write a function to create a CDF for ACT scores.
+
+### Write a function that takes a value and produces the probability of an ACT score less than or equal to that value (the CDF). Apply this function to the range 1 to 36.
+
+``` r
+x = seq(1:36)
+function_CDF = function(y) mean( act_scores <= y)
+CDF = sapply(x,function_CDF) ###This holds the the probability of an ACT score(1 till 36) less than or equal to that value.
+```
+
+### What is the minimum integer score such that the probability of that score or lower is at least .95?
+
+``` r
+#The minimum score can be calculating by finding, which CD value is .95 and above:
+min(which(CDF >= .95))
+```
+
+    ## [1] 31
+
+### Use qnorm() to determine the expected 95th percentile, the value for which the probability of receiving that score or lower is 0.95, given a mean score of 20.9 and standard deviation of 5.7.
+
+``` r
+qnorm(0.95, mean = 20.9, sd = 5.7)
+```
+
+    ## [1] 30.27567
+
+### As discussed in the Data Visualization course, we can use quantile() to determine sample quantiles from the data.
+
+Make a vector containing the quantiles for `p <- seq(0.01, 0.99, 0.01)`,
+the 1st through 99th percentiles of the `act_scores` data. Save these as
+`sample_quantiles`
+
+``` r
+p <- seq(0.01, 0.99, 0.01)
+sample_quantiles = quantile(act_scores,p)
+```
+
+### In what percentile is a score of 26?
+
+*Your answer should be an integer (i.e. 60), not a percent or fraction.
+Note that a score between the 98th and 99th percentile should be
+considered the 98th percentile, for example, and that quantile numbers
+are used as names for the vector sample\_quantiles.*
+
+``` r
+sum(sample_quantiles <= 26)
+```
+
+    ## [1] 82
+
+### Make a corresponding set of theoretical quantiles using qnorm() over the interval `p <- seq(0.01, 0.99, 0.01)` with mean 20.9 and standard deviation 5.7. Save these as `theoretical_quantiles.` Make a QQ-plot graphing sample\_quantiles on the y-axis versus `theoretical_quantiles` on the x-axis.
+
+``` r
+p <- seq(0.01, 0.99, 0.01)
+theoretical_quantiles = qnorm(p, mean = 20.9, sd = 5.7)
+
+data.frame(theoretical_quantiles,sample_quantiles) %>%  ggplot(aes(x=theoretical_quantiles, y= sample_quantiles)) + geom_point()
+```
+
+![](section3-probability_files/figure-gfm/unnamed-chunk-49-1.png)<!-- -->
